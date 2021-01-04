@@ -9,7 +9,7 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.hjd.applib.R;
-import com.hjd.applib.app.UApplication;
+import com.hjd.applib.app.MyLib;
 import com.nostra13.universalimageloader.cache.memory.impl.UsingFreqLimitedMemoryCache;
 import com.nostra13.universalimageloader.cache.memory.impl.WeakMemoryCache;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -79,7 +79,7 @@ public class ImageLoaderUtil {
                 .bitmapConfig(Bitmap.Config.RGB_565)
                 // 设置图片以何种编码方式显示
                 .imageScaleType(ImageScaleType.IN_SAMPLE_POWER_OF_2).build();
-        ImageLoaderConfiguration.Builder configBuilder = new ImageLoaderConfiguration.Builder(UApplication.getContext());
+        ImageLoaderConfiguration.Builder configBuilder = new ImageLoaderConfiguration.Builder(MyLib.getInstance().getContext());
         configBuilder.defaultDisplayImageOptions(options)
                 .memoryCache(new UsingFreqLimitedMemoryCache(3 * 1024 * 1024))
                 .memoryCacheSize(3 * 1024 * 1024)
