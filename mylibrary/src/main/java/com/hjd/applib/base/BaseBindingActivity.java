@@ -49,7 +49,7 @@ import kr.co.namee.permissiongen.PermissionGen;
 
 public abstract class BaseBindingActivity<T extends ViewBinding> extends FragmentActivity {
 
-    private T binding;
+    protected T binding;
 
     private TextView tvTitle;
     private boolean toastAutoCancel = true;

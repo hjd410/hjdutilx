@@ -42,7 +42,7 @@ import java.util.Map;
 
 
 public abstract class BaseBindingFragment<T extends ViewBinding> extends Fragment {
-    private T binding;
+    protected T binding;
     /**
      * 贴附的activity
      */
