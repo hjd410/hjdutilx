@@ -1,0 +1,1 @@
+[![](https://www.jitpack.io/v/PromiseMiss/myUtilsLib.svg)](https://www.jitpack.io/#PromiseMiss/myUtilsLib)
