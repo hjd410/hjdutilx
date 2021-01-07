@@ -86,7 +86,7 @@ public class ToastUtils {
     public static void showLong(CharSequence message) {
         if (isShow) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {//9.0以上toast直接用原生的方法即可，并不用setText防止重复的显示的问题
-                Toast.makeText(MyLib.getInstance().getContext(), message, Toast.LENGTH_SHORT).show();
+                Toast.makeText(MyLib.getInstance().getContext(), message, Toast.LENGTH_LONG).show();
             } else {
                 if (mToast == null) {
                     mToast = Toast.makeText(MyLib.getInstance().getContext(), message, Toast.LENGTH_LONG);
@@ -106,7 +106,7 @@ public class ToastUtils {
     public static void showLong(int resId) {
         if (isShow) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {//9.0以上toast直接用原生的方法即可，并不用setText防止重复的显示的问题
-                Toast.makeText(MyLib.getInstance().getContext(), resId, Toast.LENGTH_SHORT).show();
+                Toast.makeText(MyLib.getInstance().getContext(), resId, Toast.LENGTH_LONG).show();
             } else {
                 if (mToast == null) {
                     mToast = Toast.makeText(MyLib.getInstance().getContext(), resId, Toast.LENGTH_LONG);

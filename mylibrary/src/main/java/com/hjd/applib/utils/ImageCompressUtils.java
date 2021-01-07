@@ -12,6 +12,8 @@ import android.net.Uri;
 import android.provider.MediaStore.Images;
 import android.util.Log;
 
+import com.hjd.applib.app.MyLib;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -57,11 +59,11 @@ public class ImageCompressUtils {
         public Uri uri;
     }
 
-    public Bitmap compressFromUri(Context context,
-                                  CompressOptions compressOptions) {
+    public Bitmap compressFromUri(
+            CompressOptions compressOptions) {
 
         // uri指向的文件路径
-        String filePath = getFilePath(context, compressOptions.uri);
+        String filePath = getFilePath(compressOptions.uri);
 
         if (null == filePath) {
             return null;
@@ -173,13 +175,13 @@ public class ImageCompressUtils {
      * @param uri
      * @return
      */
-    private String getFilePath(Context context, Uri uri) {
+    private String getFilePath(Uri uri) {
 
         String filePath = null;
 
         if (CONTENT.equalsIgnoreCase(uri.getScheme())) {
 
-            Cursor cursor = context.getContentResolver().query(uri,
+            Cursor cursor = MyLib.getInstance().getContext().getContentResolver().query(uri,
                     new String[]{Images.Media.DATA}, null, null, null);
 
             if (null == cursor) {
@@ -255,11 +257,10 @@ public class ImageCompressUtils {
     /**
      * Uri转Path
      *
-     * @param context
      * @param uri
      * @return the file path or null
      */
-    public static String getUriToPath(final Context context, final Uri uri) {
+    public static String getUriToPath(final Uri uri) {
         if (null == uri) return null;
         final String scheme = uri.getScheme();
         String data = null;
@@ -268,7 +269,7 @@ public class ImageCompressUtils {
         else if (ContentResolver.SCHEME_FILE.equals(scheme)) {
             data = uri.getPath();
         } else if (ContentResolver.SCHEME_CONTENT.equals(scheme)) {
-            Cursor cursor = context.getContentResolver().query(uri, new String[]{Images.ImageColumns.DATA}, null, null, null);
+            Cursor cursor = MyLib.getInstance().getContext().getContentResolver().query(uri, new String[]{Images.ImageColumns.DATA}, null, null, null);
             if (null != cursor) {
                 if (cursor.moveToFirst()) {
                     int index = cursor.getColumnIndex(Images.ImageColumns.DATA);
@@ -281,11 +282,11 @@ public class ImageCompressUtils {
         }
         return data;
     }
+
     /**
      * Path转Uri
-     * */
-    public static Uri getPathToUri(String path)
-    {
+     */
+    public static Uri getPathToUri(String path) {
         Uri uri = Uri.fromFile(new File(path));
         return uri;
     }

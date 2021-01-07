@@ -26,8 +26,9 @@ import androidx.fragment.app.FragmentActivity;
 
 import com.hjd.applib.R;
 import com.hjd.applib.custom.LoadingDialog;
+import com.hjd.applib.utils.AppManager;
 import com.hjd.applib.utils.CommonUtils;
-import com.socks.library.KLog;
+import com.orhanobut.logger.Logger;
 
 
 import org.greenrobot.eventbus.EventBus;
@@ -44,7 +45,7 @@ public abstract class BaseActivity extends FragmentActivity {
     private TextView tvTitle;
     private boolean toastAutoCancel = true;
     private static final String TAG = "uploadImage";
-    public static final Map< String, String > param = new HashMap<>( );
+    public static final Map<String, String> param = new HashMap<>();
 
     private LoadingDialog loadingDialog;
     /**
@@ -61,7 +62,7 @@ public abstract class BaseActivity extends FragmentActivity {
      *
      * @param toastAutoCancel
      */
-    public void setToastAutoCancel (boolean toastAutoCancel) {
+    public void setToastAutoCancel(boolean toastAutoCancel) {
         this.toastAutoCancel = toastAutoCancel;
     }
 
@@ -70,94 +71,95 @@ public abstract class BaseActivity extends FragmentActivity {
      *
      * @param title
      */
-    public void setTitle (String title) {
-        tvTitle.setText( title );
+    public void setTitle(String title) {
+        tvTitle.setText(title);
     }
 
 
     @Override
-    protected void onCreate (Bundle savedInstanceState) {
-        super.onCreate( savedInstanceState );
-        setContentView( returnLayoutResID( ) );
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(returnLayoutResID());
         /*这行防止软键盘弹出时上面的空间错乱套*/
-        getWindow( ).setSoftInputMode( WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN );
-        CommonUtils.initState( this, R.color.contract_bar_col );
-        loadingDialog = new LoadingDialog( this );
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+        CommonUtils.initState(this, R.color.contract_bar_col);
+        loadingDialog = new LoadingDialog(this);
 
-        tvTitle = (TextView) findViewById( R.id.head_title );
+        AppManager.getInstance().addActivity(this);
+
+        tvTitle = (TextView) findViewById(R.id.head_title);
         if (tvTitle != null) {
-            setTitle( setTitleInitLayout( ) );
+            setTitle(setTitleInitLayout());
         } else {
-            setTitleInitLayout( );
+            setTitleInitLayout();
         }
-        initView( );
-        initData( );
+        initView();
+        initData();
+    }
 
+    /**
+     * 手动添加需要的权限
+     */
+    public void setPermissions(String... permissions) {
         /*读取存取权限， 位置信息， 手机状态，录音权限(录小视频用的)，
-        * */
-        PermissionGen.with( this )
-                .addRequestCode( 100 )
-                .permissions( Manifest.permission.CAMERA,
-                        Manifest.permission.READ_EXTERNAL_STORAGE,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                        Manifest.permission.ACCESS_FINE_LOCATION,
-                        Manifest.permission.READ_PHONE_STATE,
-                        Manifest.permission.RECORD_AUDIO,
-                        Manifest.permission.MOUNT_UNMOUNT_FILESYSTEMS )
-                .request( );
+         * */
+        PermissionGen.with(this)
+                .addRequestCode(100)
+                .permissions(permissions)
+                .request();
     }
 
     @Override
-    public void onRequestPermissionsResult (int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        PermissionGen.onRequestPermissionsResult( this, requestCode, permissions, grantResults );
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        PermissionGen.onRequestPermissionsResult(this, requestCode, permissions, grantResults);
     }
 
     @Override
-    public void onSaveInstanceState (Bundle outState, PersistableBundle outPersistentState) {
+    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
     }
 
     @Override
-    public void startActivityForResult (Intent intent, int requestCode, @Nullable Bundle options) {
-        if (checkDoubleClick( intent )) {
-            super.startActivityForResult( intent, requestCode, options );
+    public void startActivityForResult(Intent intent, int requestCode, @Nullable Bundle options) {
+        if (checkDoubleClick(intent)) {
+            super.startActivityForResult(intent, requestCode, options);
         }
     }
 
     /**
      * 检查是否重复跳转，不需要则重写方法并返回true
      */
-    protected boolean checkDoubleClick (Intent intent) {
+    protected boolean checkDoubleClick(Intent intent) {
 
         // 默认检查通过
         boolean result = true;
         // 标记对象
         String tag;
-        if (intent.getComponent( ) != null) { // 显式跳转
-            tag = intent.getComponent( ).getClassName( );
-        } else if (intent.getAction( ) != null) { // 隐式跳转
-            tag = intent.getAction( );
+        if (intent.getComponent() != null) { // 显式跳转
+            tag = intent.getComponent().getClassName();
+        } else if (intent.getAction() != null) { // 隐式跳转
+            tag = intent.getAction();
         } else {
             return true;
         }
 
-        if (tag.equals( mActivityJumpTag ) && mClickTime >= SystemClock.uptimeMillis( ) - 500) {
+        if (tag.equals(mActivityJumpTag) && mClickTime >= SystemClock.uptimeMillis() - 500) {
             // 检查不通过
             result = false;
         }
 
         // 记录启动标记和时间
         mActivityJumpTag = tag;
-        mClickTime = SystemClock.uptimeMillis( );
+        mClickTime = SystemClock.uptimeMillis();
         return result;
     }
 
     /**
      * 为了兼容老框架的initVIew 方法
      */
-    public void initView ( ) {
+    public void initView() {
     }
 
-    public void initData ( ) {
+    public void initData() {
 
     }
 
@@ -166,20 +168,20 @@ public abstract class BaseActivity extends FragmentActivity {
      *
      * @return
      */
-    public abstract int returnLayoutResID ( );
+    public abstract int returnLayoutResID();
 
     /**
      * 设置一个标题
      *
      * @return
      */
-    public abstract String setTitleInitLayout ( );
+    public abstract String setTitleInitLayout();
 
     /**
      * 获取标题String
      */
-    public String getTitleString ( ) {
-        return tvTitle.getText( ).toString( );
+    public String getTitleString() {
+        return tvTitle.getText().toString();
     }
 
     /**
@@ -187,27 +189,27 @@ public abstract class BaseActivity extends FragmentActivity {
      *
      * @param view
      */
-    public void back (View view) {
-        finish( );
+    public void back(View view) {
+        finish();
     }
 
 
-    public void setRightButton (int Resid) {
-        ImageView rightButton = (ImageView) findViewById( R.id.head_right_button );
-        rightButton.setImageResource( Resid );
-        rightButton.setVisibility( View.VISIBLE );
+    public void setRightButton(int Resid) {
+        ImageView rightButton = (ImageView) findViewById(R.id.head_right_button);
+        rightButton.setImageResource(Resid);
+        rightButton.setVisibility(View.VISIBLE);
     }
 
-    public void setRightButtonText (String s) {
-        TextView rightButton = (TextView) findViewById( R.id.head_right_text_button );
-        rightButton.setText( s );
-        rightButton.setVisibility( View.VISIBLE );
+    public void setRightButtonText(String s) {
+        TextView rightButton = (TextView) findViewById(R.id.head_right_text_button);
+        rightButton.setText(s);
+        rightButton.setVisibility(View.VISIBLE);
     }
 
-    public void setRightButtonTextColor (int color) {
-        TextView rightButton = (TextView) findViewById( R.id.head_right_text_button );
-        rightButton.setTextColor( color );
-        rightButton.setVisibility( View.VISIBLE );
+    public void setRightButtonTextColor(int color) {
+        TextView rightButton = (TextView) findViewById(R.id.head_right_text_button);
+        rightButton.setTextColor(color);
+        rightButton.setVisibility(View.VISIBLE);
     }
 
 /*
@@ -216,15 +218,15 @@ public abstract class BaseActivity extends FragmentActivity {
         view.setBackgroundColor(color);
     }*/
 
-    public void rightClick (View v) {
+    public void rightClick(View v) {
 
     }
 
-    public void rightIVClick (View v) {
+    public void rightIVClick(View v) {
 
     }
 
-    public void rightTVClick (View v) {
+    public void rightTVClick(View v) {
 
     }
 
@@ -234,13 +236,13 @@ public abstract class BaseActivity extends FragmentActivity {
      * @author guoyi
      * @title 修改跳转页的标题
      */
-    public static < T > void gotoActivity (Context context, Class< T > clazz, String... title) {
-        Intent intent = new Intent( context, clazz );
-        intent.setFlags( Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS );
+    public static <T> void gotoActivity(Context context, Class<T> clazz, String... title) {
+        Intent intent = new Intent(context, clazz);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
         if (title != null) {
-            intent.putExtra( "titleString", title );
+            intent.putExtra("titleString", title);
         }
-        context.startActivity( intent );
+        context.startActivity(intent);
         intent = null;
     }
 
@@ -250,60 +252,60 @@ public abstract class BaseActivity extends FragmentActivity {
      * @author guoyi
      * @params 参数
      */
-    public static < T > void gotoActivity (Context context, Class< T > clazz, HashMap< String, Object > params) {
-        Intent intent = new Intent( context, clazz );
-        intent.addFlags( Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS );
-        Iterator iterator = params.entrySet( ).iterator( );
-        while ( iterator.hasNext( ) ) {
-            Map.Entry entry = (Map.Entry) iterator.next( );
-            intent.putExtra( (String) entry.getKey( ), String.valueOf( entry.getValue( ) ) );
+    public static <T> void gotoActivity(Context context, Class<T> clazz, HashMap<String, Object> params) {
+        Intent intent = new Intent(context, clazz);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+        Iterator iterator = params.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry entry = (Map.Entry) iterator.next();
+            intent.putExtra((String) entry.getKey(), String.valueOf(entry.getValue()));
         }
-        context.startActivity( intent );
+        context.startActivity(intent);
     }
 
 
-    public boolean isEmp (CharSequence charSequence) {
-        return TextUtils.isEmpty( charSequence );
+    public boolean isEmp(CharSequence charSequence) {
+        return TextUtils.isEmpty(charSequence);
     }
 
     @Override
-    public Resources getResources ( ) {
-        Resources res = super.getResources( );
-        Configuration config = new Configuration( );
-        config.setToDefaults( );
-        res.updateConfiguration( config, res.getDisplayMetrics( ) );
+    public Resources getResources() {
+        Resources res = super.getResources();
+        Configuration config = new Configuration();
+        config.setToDefaults();
+        res.updateConfiguration(config, res.getDisplayMetrics());
         return res;
     }
 
     /*设置文字左面的图片*/
-    public void setLeftDrawable (int resid) {
-        TextView leftButton = (TextView) findViewById( R.id.head_left_text_button );
-        Drawable leftDrawable = ContextCompat.getDrawable( this, resid );
-        leftDrawable.setBounds( 0, 0, leftDrawable.getMinimumWidth( ), leftDrawable.getMinimumHeight( ) );
-        leftButton.setCompoundDrawables( leftDrawable, null, null, null );
+    public void setLeftDrawable(int resid) {
+        TextView leftButton = (TextView) findViewById(R.id.head_left_text_button);
+        Drawable leftDrawable = ContextCompat.getDrawable(this, resid);
+        leftDrawable.setBounds(0, 0, leftDrawable.getMinimumWidth(), leftDrawable.getMinimumHeight());
+        leftButton.setCompoundDrawables(leftDrawable, null, null, null);
     }
 
     /*设置文字上面的图片*/
-    public void setTopDrawable (int resid) {
-        TextView leftButton = (TextView) findViewById( R.id.head_left_text_button );
-        Drawable leftDrawable = ContextCompat.getDrawable( this, resid );
-        leftDrawable.setBounds( 0, leftDrawable.getMinimumWidth( ), 0, leftDrawable.getMinimumHeight( ) );
-        leftButton.setCompoundDrawables( leftDrawable, null, null, null );
+    public void setTopDrawable(int resid) {
+        TextView leftButton = (TextView) findViewById(R.id.head_left_text_button);
+        Drawable leftDrawable = ContextCompat.getDrawable(this, resid);
+        leftDrawable.setBounds(0, leftDrawable.getMinimumWidth(), 0, leftDrawable.getMinimumHeight());
+        leftButton.setCompoundDrawables(leftDrawable, null, null, null);
     }
 
-    public void setLeftDrawableAndTextColor (int resid, int color) {
-        TextView leftButton = (TextView) findViewById( R.id.head_left_text_button );
-        leftButton.setTextColor( color );
-        leftButton.setTextColor( color );
-        Drawable leftDrawable = ContextCompat.getDrawable( this, resid );
-        leftDrawable.setBounds( 0, 0, leftDrawable.getMinimumWidth( ), leftDrawable.getMinimumHeight( ) );
-        leftButton.setCompoundDrawables( leftDrawable, null, null, null );
+    public void setLeftDrawableAndTextColor(int resid, int color) {
+        TextView leftButton = (TextView) findViewById(R.id.head_left_text_button);
+        leftButton.setTextColor(color);
+        leftButton.setTextColor(color);
+        Drawable leftDrawable = ContextCompat.getDrawable(this, resid);
+        leftDrawable.setBounds(0, 0, leftDrawable.getMinimumWidth(), leftDrawable.getMinimumHeight());
+        leftButton.setCompoundDrawables(leftDrawable, null, null, null);
     }
 
-    public String getIntentStringExtra (String key) {
-        String result = this.getIntent( ).getStringExtra( key );
+    public String getIntentStringExtra(String key) {
+        String result = this.getIntent().getStringExtra(key);
         if (result == null) {
-            throw new NullPointerException( "参数空指针,请检查传参" );
+            throw new NullPointerException("参数空指针,请检查传参");
         }
         return result;
     }
@@ -311,32 +313,32 @@ public abstract class BaseActivity extends FragmentActivity {
     /*   隐藏软键盘方法   -------------------------------------------------------------------------  */
 
     @Override
-    public boolean dispatchTouchEvent (MotionEvent ev) {
-        if (ev.getAction( ) == MotionEvent.ACTION_DOWN) {
-            View v = getCurrentFocus( );
-            if (isShouldHideKeyboard( v, ev )) {
-                hideKeyboard( v.getWindowToken( ) );
-                v.clearFocus( );//点击空白处时清除焦点
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        if (ev.getAction() == MotionEvent.ACTION_DOWN) {
+            View v = getCurrentFocus();
+            if (isShouldHideKeyboard(v, ev)) {
+                hideKeyboard(v.getWindowToken());
+                v.clearFocus();//点击空白处时清除焦点
             }
         }
-        return super.dispatchTouchEvent( ev );
+        return super.dispatchTouchEvent(ev);
     }
 
     /**
      * 根据EditText所在坐标和用户点击的坐标相对比，
      * 来判断是否隐藏键盘，因为当用户点击EditText时则不能隐藏
      */
-    private boolean isShouldHideKeyboard (View v, MotionEvent event) {
-        if (v != null && ( v instanceof EditText )) {
-            ( (EditText) v ).setCursorVisible( false );
-            int[] l = { 0, 0 };
-            v.getLocationInWindow( l );
-            int left = l[ 0 ],
-                    top = l[ 1 ],
-                    bottom = top + v.getHeight( ),
-                    right = left + v.getWidth( );
-            if (event.getX( ) > left && event.getX( ) < right
-                    && event.getY( ) > top && event.getY( ) < bottom) {
+    private boolean isShouldHideKeyboard(View v, MotionEvent event) {
+        if (v != null && (v instanceof EditText)) {
+            ((EditText) v).setCursorVisible(false);
+            int[] l = {0, 0};
+            v.getLocationInWindow(l);
+            int left = l[0],
+                    top = l[1],
+                    bottom = top + v.getHeight(),
+                    right = left + v.getWidth();
+            if (event.getX() > left && event.getX() < right
+                    && event.getY() > top && event.getY() < bottom) {
                 // 点击EditText的事件，忽略它。
                 return false;
             } else {
@@ -350,47 +352,48 @@ public abstract class BaseActivity extends FragmentActivity {
     /**
      * 获取InputMethodManager，隐藏软键盘
      */
-    private void hideKeyboard (IBinder token) {
+    private void hideKeyboard(IBinder token) {
         if (token != null) {
-            InputMethodManager im = (InputMethodManager) getSystemService( Context.INPUT_METHOD_SERVICE );
-            im.hideSoftInputFromWindow( token, InputMethodManager.HIDE_NOT_ALWAYS );
+            InputMethodManager im = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            im.hideSoftInputFromWindow(token, InputMethodManager.HIDE_NOT_ALWAYS);
         }
     }
     /*     ----------------------------------------------------------------------------------*/
 
-    public LoadingDialog showLoadingDialog ( ) {
+    public LoadingDialog showLoadingDialog() {
         if (loadingDialog == null) {
-            loadingDialog = new LoadingDialog( this );
+            loadingDialog = new LoadingDialog(this);
         }
-        if (! loadingDialog.isShowing( )) {
-            loadingDialog.setCanceledOnTouchOutside( false );
-            loadingDialog.setCancelable( false );
-            loadingDialog.show( );
+        if (!loadingDialog.isShowing()) {
+            loadingDialog.setCanceledOnTouchOutside(false);
+            loadingDialog.setCancelable(false);
+            loadingDialog.show();
         }
         return loadingDialog;
     }
 
-    public void dismissLoading ( ) {
-        if (loadingDialog != null && loadingDialog.isShowing( )) {
-            loadingDialog.dismiss( );
+    public void dismissLoading() {
+        if (loadingDialog != null && loadingDialog.isShowing()) {
+            loadingDialog.dismiss();
             //            OkGo.getInstance().cancelTag(this);
-            KLog.i( "取消请求" );
+            Logger.i("取消请求");
         }
     }
 
     @Subscribe
     @Override
-    protected void onDestroy ( ) {
-        if (loadingDialog != null && loadingDialog.isShowing( )) {
-            loadingDialog.dismiss( );
+    protected void onDestroy() {
+        if (loadingDialog != null && loadingDialog.isShowing()) {
+            loadingDialog.dismiss();
         }
-        super.onDestroy( );
-        EventBus.getDefault( ).unregister( this );
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
+        AppManager.getInstance().removeActivity(this);
     }
 
 
     @Override
-    public void startActivity (Intent intent) {
-        super.startActivity( intent );
+    public void startActivity(Intent intent) {
+        super.startActivity(intent);
     }
 }

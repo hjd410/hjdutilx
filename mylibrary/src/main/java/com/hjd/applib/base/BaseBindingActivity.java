@@ -1,11 +1,10 @@
 package com.hjd.applib.base;
 
-import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.PersistableBundle;
@@ -18,19 +17,15 @@ import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewbinding.ViewBinding;
 
-import com.hjd.applib.R;
 import com.hjd.applib.custom.LoadingDialog;
-import com.hjd.applib.utils.CommonUtils;
-import com.socks.library.KLog;
+import com.hjd.applib.utils.AppManager;
+import com.orhanobut.logger.Logger;
 
 
 import org.greenrobot.eventbus.EventBus;
@@ -51,11 +46,10 @@ public abstract class BaseBindingActivity<T extends ViewBinding> extends Fragmen
 
     protected T binding;
 
-    private TextView tvTitle;
     private boolean toastAutoCancel = true;
-    private static final String TAG = "uploadImage";
     public static final Map<String, String> param = new HashMap<>();
-
+    //是否允许旋转屏幕
+    private boolean isAllowScreenRoate = true;
     private LoadingDialog loadingDialog;
     /**
      * activity跳转tag
@@ -75,15 +69,6 @@ public abstract class BaseBindingActivity<T extends ViewBinding> extends Fragmen
         this.toastAutoCancel = toastAutoCancel;
     }
 
-    /**
-     * 在oncreate后调用 修改标题
-     *
-     * @param title
-     */
-    public void setTitle(String title) {
-        tvTitle.setText(title);
-    }
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,23 +85,30 @@ public abstract class BaseBindingActivity<T extends ViewBinding> extends Fragmen
         /*这行防止软键盘弹出时上面的空间错乱套*/
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
 //        CommonUtils.initState(this, R.color.contract_bar_col);
+        AppManager.getInstance().addActivity(this);
         loadingDialog = new LoadingDialog(this);
         initPhotoError();//解决7.0上相机问题
-
+        //设置屏幕是否可旋转
+        if (!isAllowScreenRoate) {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        } else {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        }
         initView();
         initData();
 
+
+    }
+
+    /**
+     * 手动添加需要的权限
+     */
+    public void setPermissions(String... permissions) {
         /*读取存取权限， 位置信息， 手机状态，录音权限(录小视频用的)，
          * */
         PermissionGen.with(this)
                 .addRequestCode(100)
-                .permissions(Manifest.permission.CAMERA,
-                        Manifest.permission.READ_EXTERNAL_STORAGE,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                        Manifest.permission.ACCESS_FINE_LOCATION,
-                        Manifest.permission.READ_PHONE_STATE,
-                        Manifest.permission.RECORD_AUDIO,
-                        Manifest.permission.MOUNT_UNMOUNT_FILESYSTEMS)
+                .permissions(permissions)
                 .request();
     }
 
@@ -134,6 +126,15 @@ public abstract class BaseBindingActivity<T extends ViewBinding> extends Fragmen
         if (checkDoubleClick(intent)) {
             super.startActivityForResult(intent, requestCode, options);
         }
+    }
+
+    /**
+     * 是否允许屏幕旋转
+     *
+     * @param allowScreenRoate true or false
+     */
+    public void setAllowScreenRoate(boolean allowScreenRoate) {
+        isAllowScreenRoate = allowScreenRoate;
     }
 
     /**
@@ -181,6 +182,26 @@ public abstract class BaseBindingActivity<T extends ViewBinding> extends Fragmen
         StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
         StrictMode.setVmPolicy(builder.build());
         builder.detectFileUriExposure();
+    }
+
+    /**
+     * 保证同一按钮在1秒内只会响应一次点击事件
+     */
+    public abstract class OnSingleClickListener implements View.OnClickListener {
+        //两次点击按钮之间的间隔，目前为1000ms
+        private static final int MIN_CLICK_DELAY_TIME = 1000;
+        private long lastClickTime;
+
+        public abstract void onSingleClick(View view);
+
+        @Override
+        public void onClick(View view) {
+            long curClickTime = System.currentTimeMillis();
+            if ((curClickTime - lastClickTime) >= MIN_CLICK_DELAY_TIME) {
+                lastClickTime = curClickTime;
+                onSingleClick(view);
+            }
+        }
     }
 
     /**
@@ -304,7 +325,7 @@ public abstract class BaseBindingActivity<T extends ViewBinding> extends Fragmen
         if (loadingDialog != null && loadingDialog.isShowing()) {
             loadingDialog.dismiss();
             //            OkGo.getInstance().cancelTag(this);
-            KLog.i("取消请求");
+            Logger.i("取消请求");
         }
     }
 
@@ -316,6 +337,7 @@ public abstract class BaseBindingActivity<T extends ViewBinding> extends Fragmen
         }
         super.onDestroy();
         EventBus.getDefault().unregister(this);
+        AppManager.getInstance().finishActivity(this);
     }
 
 

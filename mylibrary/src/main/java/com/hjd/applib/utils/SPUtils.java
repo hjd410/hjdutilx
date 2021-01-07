@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Base64;
 
+import com.hjd.applib.app.MyLib;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -20,15 +22,14 @@ public class SPUtils {
     /**
      * 保存实体类
      *
-     * @param context  上下文
      * @param t        要保存的实体类
      * @param fileName 文件名
      * @param keyName  键值名称
      * @param <T>
      */
 
-    public static <T> void saveBean2Sp(Context context, T t, String fileName, String keyName) {
-        SharedPreferences preferences = context.getSharedPreferences(fileName, Context.MODE_PRIVATE);
+    public static <T> void saveBean2Sp(T t, String fileName, String keyName) {
+        SharedPreferences preferences = MyLib.getInstance().getContext().getSharedPreferences(fileName, Context.MODE_PRIVATE);
         ByteArrayOutputStream bos;
         ObjectOutputStream oos = null;
         try {
@@ -56,14 +57,13 @@ public class SPUtils {
 
 
     /**
-     * @param context  上下文
      * @param fileName 文件名
      * @param keyNme   键值名
      * @param <T>
      * @return
      */
-    public static <T extends Object> T getBeanFromSp(Context context, String fileName, String keyNme) {
-        SharedPreferences preferences = context.getSharedPreferences(fileName, Context.MODE_PRIVATE);
+    public static <T extends Object> T getBeanFromSp(String fileName, String keyNme) {
+        SharedPreferences preferences = MyLib.getInstance().getContext().getSharedPreferences(fileName, Context.MODE_PRIVATE);
         byte[] bytes = Base64.decode(preferences.getString(keyNme, ""), Base64.DEFAULT);
         ByteArrayInputStream bis;
         ObjectInputStream ois = null;
@@ -92,7 +92,7 @@ public class SPUtils {
     /**
      * 存放实体类以及任意类型 * @param context 上下文对象 * @param key * @param obj
      */
-    public static void putBean(Context context, String key, Object obj) {
+    public static void putBean(String key, Object obj) {
         if (obj instanceof Serializable) {// obj必须实现Serializable接口，否则会出问题
             try {
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -100,7 +100,7 @@ public class SPUtils {
                 oos.writeObject(obj);
                 String string64 = new String(Base64.encode(baos.toByteArray(),
                         0));
-                SharedPreferences.Editor editor = context.getSharedPreferences(String.valueOf(obj), Context.MODE_PRIVATE).edit();
+                SharedPreferences.Editor editor = MyLib.getInstance().getContext().getSharedPreferences(String.valueOf(obj), Context.MODE_PRIVATE).edit();
                 editor.putString(key, string64).commit();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -113,10 +113,10 @@ public class SPUtils {
 
     }
 
-    public static Object getBean(Context context, String key) {
+    public static Object getBean(String key) {
         Object obj = null;
         try {
-            String base64 = context.getSharedPreferences(key, Context.MODE_PRIVATE).getString(key, "");
+            String base64 = MyLib.getInstance().getContext().getSharedPreferences(key, Context.MODE_PRIVATE).getString(key, "");
             if (base64.equals("")) {
                 return null;
             }

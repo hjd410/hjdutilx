@@ -14,6 +14,8 @@ import android.os.Bundle;
 
 import androidx.core.app.NotificationCompat;
 
+import com.hjd.applib.app.MyLib;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
@@ -33,7 +35,7 @@ public final class BadgeUtil {
     /**
      * 设置Badge 目前支持Launcher
      */
-    public static void setBadgeCount(Context context, int count, int iconResId) {
+    public static void setBadgeCount(int count, int iconResId) {
         if (count <= 0) {
             count = -1;
         } else {
@@ -41,20 +43,20 @@ public final class BadgeUtil {
         }
 
         if (Build.MANUFACTURER.equalsIgnoreCase("xiaomi")) {
-            setBadgeOfMIUI(context, count, iconResId);
+            setBadgeOfMIUI(count, iconResId);
         } else if (Build.MANUFACTURER.equalsIgnoreCase("sony")) {
-            setBadgeOfSony(context, count);
+            setBadgeOfSony(count);
         } else if (Build.MANUFACTURER.toLowerCase().contains("samsung") ||
                 Build.MANUFACTURER.toLowerCase().contains("lg")) {
-            setBadgeOfSumsung(context, count);
+            setBadgeOfSumsung(count);
         } else if (Build.MANUFACTURER.toLowerCase().contains("htc")) {
-            setBadgeOfHTC(context, count);
+            setBadgeOfHTC(count);
         } else if (Build.MANUFACTURER.toLowerCase().contains("nova")) {
-            setBadgeOfNova(context, count);
+            setBadgeOfNova(count);
         } else if (Build.MANUFACTURER.toLowerCase().contains("huawei")) {
-            setBadgeHuawei(context, count);
+            setBadgeHuawei(count);
         } else if (Build.MANUFACTURER.toLowerCase().contains("oppo")) {
-            setBadgeNumberOPPO(context, count);
+            setBadgeNumberOPPO(count);
         } else if (Build.MANUFACTURER.toLowerCase().contains("vivo")) {
 
         } else {
@@ -66,10 +68,10 @@ public final class BadgeUtil {
     /**
      * 设置MIUI的Badge
      */
-    private static void setBadgeOfMIUI(Context context, int count, int iconResId) {
-        NotificationManager mNotificationManager = (NotificationManager) context
+    private static void setBadgeOfMIUI(int count, int iconResId) {
+        NotificationManager mNotificationManager = (NotificationManager) MyLib.getInstance().getContext()
                 .getSystemService(Context.NOTIFICATION_SERVICE);
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(MyLib.getInstance().getContext());
         builder.setContentTitle("标题").setContentText("消息正文").setSmallIcon(iconResId);
         Notification notification = builder.build();
         try {
@@ -87,8 +89,8 @@ public final class BadgeUtil {
      * 设置索尼的Badge
      * 需添加权限：<uses-permission android:name="com.sonyericsson.home.permission.BROADCAST_BADGE" />
      */
-    private static void setBadgeOfSony(Context context, int count) {
-        String launcherClassName = getLauncherClassName(context);
+    private static void setBadgeOfSony(int count) {
+        String launcherClassName = getLauncherClassName();
         if (launcherClassName == null) {
             return;
         }
@@ -101,37 +103,37 @@ public final class BadgeUtil {
         localIntent.putExtra("com.sonyericsson.home.intent.extra.badge.SHOW_MESSAGE", isShow);//是否显示
         localIntent.putExtra("com.sonyericsson.home.intent.extra.badge.ACTIVITY_NAME", launcherClassName);//启动页
         localIntent.putExtra("com.sonyericsson.home.intent.extra.badge.MESSAGE", String.valueOf(count));//数字
-        localIntent.putExtra("com.sonyericsson.home.intent.extra.badge.PACKAGE_NAME", context.getPackageName());//包名
-        context.sendBroadcast(localIntent);
+        localIntent.putExtra("com.sonyericsson.home.intent.extra.badge.PACKAGE_NAME", MyLib.getInstance().getContext().getPackageName());//包名
+        MyLib.getInstance().getContext().sendBroadcast(localIntent);
     }
 
     /**
      * 设置三星的Badge\设置LG的Badge
      */
-    private static void setBadgeOfSumsung(Context context, int count) {
+    private static void setBadgeOfSumsung(int count) {
         // 获取你当前的应用
-        String launcherClassName = getLauncherClassName(context);
+        String launcherClassName = getLauncherClassName();
         if (launcherClassName == null) {
             return;
         }
         Intent intent = new Intent("android.intent.action.BADGE_COUNT_UPDATE");
         intent.putExtra("badge_count", count);
-        intent.putExtra("badge_count_package_name", context.getPackageName());
+        intent.putExtra("badge_count_package_name", MyLib.getInstance().getContext().getPackageName());
         intent.putExtra("badge_count_class_name", launcherClassName);
-        context.sendBroadcast(intent);
+        MyLib.getInstance().getContext().sendBroadcast(intent);
     }
 
     /**
      * 华为的 设置角标
      */
-    private static void setBadgeHuawei(Context context, int num) {
+    private static void setBadgeHuawei(int num) {
         try {
             Bundle bunlde = new Bundle();
             bunlde.putString("package", "com.sy.app");
             bunlde.putString("class", "com.sy.app.common.activity.SplashActivity");
 //            bunlde.putString("class", "com.sy.app.main.MainActivity");
             bunlde.putInt("badgenumber", num);
-            context.getContentResolver().call(Uri.parse("content://com.huawei.android.launcher.settings/badge/"), "change_badge", null, bunlde);
+            MyLib.getInstance().getContext().getContentResolver().call(Uri.parse("content://com.huawei.android.launcher.settings/badge/"), "change_badge", null, bunlde);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -141,60 +143,59 @@ public final class BadgeUtil {
     /**
      * 设置HTC的Badge
      */
-    private static void setBadgeOfHTC(Context context, int count) {
+    private static void setBadgeOfHTC(int count) {
         Intent intentNotification = new Intent("com.htc.launcher.action.SET_NOTIFICATION");
-        ComponentName localComponentName = new ComponentName(context.getPackageName(), getLauncherClassName(context));
+        ComponentName localComponentName = new ComponentName(MyLib.getInstance().getContext().getPackageName(), getLauncherClassName());
         intentNotification.putExtra("com.htc.launcher.extra.COMPONENT", localComponentName.flattenToShortString());
         intentNotification.putExtra("com.htc.launcher.extra.COUNT", count);
-        context.sendBroadcast(intentNotification);
+        MyLib.getInstance().getContext().sendBroadcast(intentNotification);
 
         Intent intentShortcut = new Intent("com.htc.launcher.action.UPDATE_SHORTCUT");
-        intentShortcut.putExtra("packagename", context.getPackageName());
+        intentShortcut.putExtra("packagename", MyLib.getInstance().getContext().getPackageName());
         intentShortcut.putExtra("count", count);
-        context.sendBroadcast(intentShortcut);
+        MyLib.getInstance().getContext().sendBroadcast(intentShortcut);
     }
 
     /**
      * 设置Nova的Badge
      */
-    private static void setBadgeOfNova(Context context, int count) {
+    private static void setBadgeOfNova(int count) {
         ContentValues contentValues = new ContentValues();
-        contentValues.put("tag", context.getPackageName() + "/" + getLauncherClassName(context));
+        contentValues.put("tag", MyLib.getInstance().getContext().getPackageName() + "/" + getLauncherClassName());
         contentValues.put("count", count);
-        context.getContentResolver().insert(Uri.parse("content://com.teslacoilsw.notifier/unread_count"),
+        MyLib.getInstance().getContext().getContentResolver().insert(Uri.parse("content://com.teslacoilsw.notifier/unread_count"),
                 contentValues);
     }
 
-    public static void setBadgeOfMadMode(Context context, int count, String packageName, String className) {
+    public static void setBadgeOfMadMode(int count, String packageName, String className) {
         Intent intent = new Intent("android.intent.action.BADGE_COUNT_UPDATE");
         intent.putExtra("badge_count", count);
         intent.putExtra("badge_count_package_name", packageName);
         intent.putExtra("badge_count_class_name", className);
-        context.sendBroadcast(intent);
+        MyLib.getInstance().getContext().sendBroadcast(intent);
     }
 
     /**
      * oppo手机角标
      *
-     * @param context 上下文
-     * @param number  数量
+     * @param number 数量
      */
-    public static void setBadgeNumberOPPO(Context context, int number) {
+    public static void setBadgeNumberOPPO(int number) {
         try {
             if (number == 0) {
                 number = -1;
             }
             Intent intent = new Intent("com.oppo.unsettledevent");
-            intent.putExtra("pakeageName", context.getPackageName());
+            intent.putExtra("pakeageName", MyLib.getInstance().getContext().getPackageName());
             intent.putExtra("number", number);
             intent.putExtra("upgradeNumber", number);
-            if (canResolveBroadcast(context, intent)) {
-                context.sendBroadcast(intent);
+            if (canResolveBroadcast(intent)) {
+                MyLib.getInstance().getContext().sendBroadcast(intent);
             } else {
                 try {
                     Bundle extras = new Bundle();
                     extras.putInt("app_badge_count", number);
-                    context.getContentResolver().call(Uri.parse("content://com.android.badge/badge"), "setAppBadgeCount", null, extras);
+                    MyLib.getInstance().getContext().getContentResolver().call(Uri.parse("content://com.android.badge/badge"), "setAppBadgeCount", null, extras);
                 } catch (Throwable t) {
                     t.printStackTrace();
                 }
@@ -205,8 +206,8 @@ public final class BadgeUtil {
         }
     }
 
-    private static boolean canResolveBroadcast(Context context, Intent intent) {
-        PackageManager packageManager = context.getPackageManager();
+    private static boolean canResolveBroadcast(Intent intent) {
+        PackageManager packageManager = MyLib.getInstance().getContext().getPackageManager();
         List<ResolveInfo> receivers = packageManager.queryBroadcastReceivers(intent, 0);
         return receivers != null && receivers.size() > 0;
     }
@@ -214,17 +215,16 @@ public final class BadgeUtil {
     /**
      * VIVO手机角标
      *
-     * @param context 上下文
-     * @param number  数量
+     * @param number 数量
      */
-    public static void setBadgeNumberVIVO(Context context, int number) {
+    public static void setBadgeNumberVIVO(int number) {
         try {
             Intent intent = new Intent("launcher.action.CHANGE_APPLICATION_NOTIFICATION_NUM");
-            intent.putExtra("packageName", context.getPackageName());
-            String launchClassName = context.getPackageManager().getLaunchIntentForPackage(context.getPackageName()).getComponent().getClassName();
+            intent.putExtra("packageName", MyLib.getInstance().getContext().getPackageName());
+            String launchClassName = MyLib.getInstance().getContext().getPackageManager().getLaunchIntentForPackage(MyLib.getInstance().getContext().getPackageName()).getComponent().getClassName();
             intent.putExtra("className", launchClassName);
             intent.putExtra("notificationNum", number);
-            context.sendBroadcast(intent);
+            MyLib.getInstance().getContext().sendBroadcast(intent);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -234,14 +234,14 @@ public final class BadgeUtil {
     /**
      * 重置Badge
      */
-    public static void resetBadgeCount(Context context, int iconResId) {
-        setBadgeCount(context, 0, iconResId);
+    public static void resetBadgeCount(int iconResId) {
+        setBadgeCount(0, iconResId);
     }
 
-    public static String getLauncherClassName(Context context) {
-        PackageManager packageManager = context.getPackageManager();
+    public static String getLauncherClassName() {
+        PackageManager packageManager = MyLib.getInstance().getContext().getPackageManager();
         Intent intent = new Intent(Intent.ACTION_MAIN);
-        intent.setPackage(context.getPackageName());
+        intent.setPackage(MyLib.getInstance().getContext().getPackageName());
         intent.addCategory(Intent.CATEGORY_LAUNCHER);
         ResolveInfo info = packageManager.resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY);
         if (info == null) {

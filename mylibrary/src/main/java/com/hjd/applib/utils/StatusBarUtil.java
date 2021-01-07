@@ -14,6 +14,8 @@ import android.view.WindowManager;
 
 import androidx.annotation.IntDef;
 
+import com.hjd.applib.app.MyLib;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.reflect.Field;
@@ -157,12 +159,12 @@ public class StatusBarUtil {
     }
 
     //获取状态栏高度
-    public static int getStatusBarHeight(Context context) {
+    public static int getStatusBarHeight() {
         int result = 0;
-        int resourceId = context.getResources().getIdentifier(
+        int resourceId = MyLib.getInstance().getContext().getResources().getIdentifier(
                 "status_bar_height", "dimen", "android");
         if (resourceId > 0) {
-            result = context.getResources().getDimensionPixelSize(resourceId);
+            result = MyLib.getInstance().getContext().getResources().getDimensionPixelSize(resourceId);
         }
         return result;
     }
@@ -175,9 +177,9 @@ public class StatusBarUtil {
         int result = 0;
         //这个方法只支持4.0以上系统
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            if (MIUISetStatusBarLightMode(activity.getWindow(), true)) {//判断是不是小米系统
+            if (MIUISetStatusBarLightMode(activity, true)) {//判断是不是小米系统
                 result = 1;
-            } else if (FlymeSetStatusBarLightMode(activity.getWindow(), true)) {//判断是不是魅族系统
+            } else if (FlymeSetStatusBarLightMode(activity, true)) {//判断是不是魅族系统
                 result = 2;
             } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {//判断当前是不是6.0以上的系统
                 activity.getWindow().getDecorView().setSystemUiVisibility(
@@ -235,12 +237,13 @@ public class StatusBarUtil {
     /**
      * 修改小米手机系统的
      *
-     * @param window
+     * @param activity
      * @param dark
      * @return
      */
-    public static boolean MIUISetStatusBarLightMode(Window window, boolean dark) {
+    public static boolean MIUISetStatusBarLightMode(Activity activity, boolean dark) {
         boolean result = false;
+        Window window = activity.getWindow();
         if (window != null) {
             Class clazz = window.getClass();
             try {
@@ -265,12 +268,13 @@ public class StatusBarUtil {
     /**
      * 魅族手机修改该字体颜色
      *
-     * @param window
+     * @param activity
      * @param dark
      * @return
      */
-    public static boolean FlymeSetStatusBarLightMode(Window window, boolean dark) {
+    public static boolean FlymeSetStatusBarLightMode(Activity activity, boolean dark) {
         boolean result = false;
+        Window window = activity.getWindow();
         if (window != null) {
             try {
                 WindowManager.LayoutParams lp = window.getAttributes();
