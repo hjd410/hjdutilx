@@ -3,7 +3,6 @@ package com.hjd.applib.utils;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.content.Context;
 import android.graphics.Color;
 import android.os.Build;
 import android.view.View;
@@ -175,6 +174,10 @@ public class StatusBarUtil {
      */
     public static int StatusBarLightMode(Activity activity) {
         int result = 0;
+        Window window = activity.getWindow();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            window.setDecorFitsSystemWindows(true);
+        }
         //这个方法只支持4.0以上系统
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             if (MIUISetStatusBarLightMode(activity, true)) {//判断是不是小米系统

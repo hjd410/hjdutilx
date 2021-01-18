@@ -20,6 +20,11 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
     buildFeatures {
         viewBinding = true
     }
@@ -37,10 +42,25 @@ dependencies {
     api 'com.wang.avi:library:2.1.3'
     /*权限管理框架*/
     api 'com.lovedise:permissiongen:0.0.6'
+    //Gson==解析Json
     api 'com.google.code.gson:gson:2.8.6'
     api 'org.greenrobot:eventbus:3.1.1'
     //log工具
     api 'com.orhanobut:logger:2.2.0'
+    //图片库
     api 'com.github.bumptech.glide:glide:4.9.0'
+    //Web
+    api 'com.just.agentweb:agentweb:4.1.4'
+    //OKGO网络请求
+    api 'com.squareup.okhttp3:okhttp:3.11.0'
+    api 'com.lzy.net:okgo:3.0.4'
+    api 'com.lzy.net:okserver:2.0.1'
+    //腾讯的本地存储库,
+    api 'com.tencent:mmkv:1.0.22'
+    //Retrofit2网络
+    api 'com.squareup.retrofit2:retrofit:2.9.0'
+    api 'com.squareup.retrofit2:converter-gson:2.2.0'
+    //状态栏颜色
+    api 'com.jaeger.statusbarutil:library:1.5.1'
 
 }

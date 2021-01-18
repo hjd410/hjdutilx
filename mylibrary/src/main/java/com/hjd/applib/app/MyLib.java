@@ -27,7 +27,6 @@ public class MyLib {
 
     public MyLib init(Application application) {
         context = application;
-        Logger.addLogAdapter(new AndroidLogAdapter());
         return this;
     }
 
