@@ -1,3 +1,3 @@
 include ':hjdUtilsX'
 include ':app'
-rootProject.name = "hjdUtilsX"
+rootProject.name = "hjdUtilsLibX"
