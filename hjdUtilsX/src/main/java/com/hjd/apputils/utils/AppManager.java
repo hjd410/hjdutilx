@@ -107,8 +107,9 @@ public class AppManager {
     public void exit() {
         try {
             for (Activity activity : hashSet) {
-                if (activity != null)
+                if (activity != null) {
                     activity.finish();
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();

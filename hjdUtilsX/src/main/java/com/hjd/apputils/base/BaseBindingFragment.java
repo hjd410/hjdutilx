@@ -184,6 +184,7 @@ public abstract class BaseBindingFragment<T extends ViewBinding> extends Fragmen
 
     }
 
+
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
@@ -211,9 +212,9 @@ public abstract class BaseBindingFragment<T extends ViewBinding> extends Fragmen
     }
 
     /**
-     * 无参数打开一个activi
+     * 无参数打开一个activity
      *
-     * @author guoyi
+     * @author hjd
      * @title 修改跳转页的标题
      */
     public static <T> void gotoActivity(Context context, Class<T> clazz, String... title) {
@@ -230,7 +231,7 @@ public abstract class BaseBindingFragment<T extends ViewBinding> extends Fragmen
     /**
      * 参数打开一个activi
      *
-     * @author guoyi
+     * @author hjd
      * @params 参数
      */
     public static <T> void gotoActivity(Context context, Class<T> clazz, HashMap<String, Object> params) {

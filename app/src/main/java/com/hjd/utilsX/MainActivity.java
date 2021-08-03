@@ -6,6 +6,7 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Environment;
+import android.os.Handler;
 import android.os.IBinder;
 import android.view.View;
 
@@ -20,6 +21,8 @@ import java.io.File;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import static java.lang.annotation.ElementType.*;
 
@@ -46,9 +49,21 @@ public class MainActivity extends BaseBindingActivity<ActivityMainBinding> {
     };
 
     @Override
+    protected void initView() {
+
+    }
+
+    @Override
     public void initData() {
         setPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE);
         StatusBarUtil.setRootViewFitsSystemWindows(this, false);
+        showLoadingDialog();
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                dismissLoading();
+            }
+        }, 5000);
 
         Glide.with(this).load("http://p1.pstatp.com/large/166200019850062839d3").into(binding.img);
 
@@ -98,6 +113,8 @@ public class MainActivity extends BaseBindingActivity<ActivityMainBinding> {
             }
         });
     }
+
+
 
     @Override
     public int checkPermission(String permission, int pid, int uid) {

@@ -1,5 +1,6 @@
 package com.hjd.apputils.base;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -24,6 +25,7 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.viewbinding.ViewBinding;
 
 import com.blankj.utilcode.util.LogUtils;
+import com.hjd.apputils.app.MyLib;
 import com.hjd.apputils.custom.LoadingDialog;
 import com.hjd.apputils.utils.AppManager;
 
@@ -48,8 +50,10 @@ public abstract class BaseBindingActivity<T extends ViewBinding> extends Fragmen
 
     private boolean toastAutoCancel = true;
     public static final Map<String, String> param = new HashMap<>();
-    //是否允许旋转屏幕
-    private boolean isAllowScreenRoate = true;
+    /**
+     * 是否允许旋转屏幕
+     */
+    private boolean isAllowScreenRotation = true;
     private LoadingDialog loadingDialog;
     /**
      * activity跳转tag
@@ -84,21 +88,28 @@ public abstract class BaseBindingActivity<T extends ViewBinding> extends Fragmen
         }
         /*这行防止软键盘弹出时上面的空间错乱套*/
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
-//        CommonUtils.initState(this, R.color.contract_bar_col);
         AppManager.getInstance().addActivity(this);
-        loadingDialog = new LoadingDialog(this);
+        loadingDialog = new LoadingDialog(MyLib.getInstance().getContext());
+        initView();
+        initData();
         initPhotoError();//解决7.0上相机问题
         //设置屏幕是否可旋转
-        if (!isAllowScreenRoate) {
+        if (!isAllowScreenRotation) {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         } else {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         }
-        initView();
-        initData();
-
-
     }
+
+    /**
+     * 初始化控件
+     */
+    protected abstract void initView();
+
+    /**
+     * 设置数据
+     */
+    protected abstract void initData();
 
     /**
      * 手动添加需要的权限
@@ -114,6 +125,7 @@ public abstract class BaseBindingActivity<T extends ViewBinding> extends Fragmen
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         PermissionGen.onRequestPermissionsResult(this, requestCode, permissions, grantResults);
     }
 
@@ -131,10 +143,10 @@ public abstract class BaseBindingActivity<T extends ViewBinding> extends Fragmen
     /**
      * 是否允许屏幕旋转
      *
-     * @param allowScreenRoate true or false
+     * @param allowScreenRotation true or false
      */
-    public void setAllowScreenRoate(boolean allowScreenRoate) {
-        isAllowScreenRoate = allowScreenRoate;
+    public void setAllowScreenRotation(boolean allowScreenRotation) {
+        isAllowScreenRotation = allowScreenRotation;
     }
 
     /**
@@ -165,15 +177,6 @@ public abstract class BaseBindingActivity<T extends ViewBinding> extends Fragmen
         return result;
     }
 
-    /**
-     * 为了兼容老框架的initVIew 方法
-     */
-    public void initView() {
-    }
-
-    public void initData() {
-
-    }
 
     /**
      * android 7.0系统解决拍照的问题
@@ -187,7 +190,7 @@ public abstract class BaseBindingActivity<T extends ViewBinding> extends Fragmen
     /**
      * 保证同一按钮在1秒内只会响应一次点击事件
      */
-    public abstract class OnSingleClickListener implements View.OnClickListener {
+    public abstract static class OnSingleClickListener implements View.OnClickListener {
         //两次点击按钮之间的间隔，目前为1000ms
         private static final int MIN_CLICK_DELAY_TIME = 1000;
         private long lastClickTime;
@@ -207,26 +210,25 @@ public abstract class BaseBindingActivity<T extends ViewBinding> extends Fragmen
     /**
      * 无参数打开一个activi
      *
-     * @author guoyi
+     * @author hjd
      * @title 修改跳转页的标题
      */
-    public static <T> void gotoActivity(Context context, Class<T> clazz, String... title) {
+    public static <T> void gotoActivity(Activity context, Class<T> clazz, String... title) {
         Intent intent = new Intent(context, clazz);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
         if (title != null) {
             intent.putExtra("titleString", title);
         }
         context.startActivity(intent);
-        intent = null;
     }
 
     /**
      * 参数打开一个activi
      *
-     * @author guoyi
+     * @author hjd
      * @params 参数
      */
-    public static <T> void gotoActivity(Context context, Class<T> clazz, HashMap<String, Object> params) {
+    public static <T> void gotoActivity(Activity context, Class<T> clazz, HashMap<String, Object> params) {
         Intent intent = new Intent(context, clazz);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
         Iterator iterator = params.entrySet().iterator();
@@ -237,7 +239,7 @@ public abstract class BaseBindingActivity<T extends ViewBinding> extends Fragmen
         context.startActivity(intent);
     }
 
-
+    /*判断字符串是否为空*/
     public boolean isEmp(CharSequence charSequence) {
         return TextUtils.isEmpty(charSequence);
     }
@@ -251,6 +253,9 @@ public abstract class BaseBindingActivity<T extends ViewBinding> extends Fragmen
         return res;
     }
 
+    /**
+     * 获取Intent传值
+     */
     public String getIntentStringExtra(String key) {
         String result = this.getIntent().getStringExtra(key);
         if (result == null) {
@@ -324,8 +329,6 @@ public abstract class BaseBindingActivity<T extends ViewBinding> extends Fragmen
     public void dismissLoading() {
         if (loadingDialog != null && loadingDialog.isShowing()) {
             loadingDialog.dismiss();
-            //            OkGo.getInstance().cancelTag(this);
-            LogUtils.i("取消请求");
         }
     }
 
@@ -338,11 +341,5 @@ public abstract class BaseBindingActivity<T extends ViewBinding> extends Fragmen
         super.onDestroy();
         EventBus.getDefault().unregister(this);
         AppManager.getInstance().finishActivity(this);
-    }
-
-
-    @Override
-    public void startActivity(Intent intent) {
-        super.startActivity(intent);
     }
 }
