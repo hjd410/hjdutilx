@@ -2,39 +2,36 @@ package com.hjd.apputils.base;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.PersistableBundle;
-import android.os.StrictMode;
 import android.os.SystemClock;
 import android.text.TextUtils;
-import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
-import androidx.viewbinding.ViewBinding;
 
+import com.blankj.utilcode.util.LogUtils;
+import com.hjd.apputils.R;
 import com.hjd.apputils.custom.LoadingDialog;
 import com.hjd.apputils.utils.AppManager;
-import com.orhanobut.logger.Logger;
-
+import com.hjd.apputils.utils.CommonUtils;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -42,14 +39,12 @@ import java.util.Map;
 import kr.co.namee.permissiongen.PermissionGen;
 
 
-public abstract class BaseBindingActivity<T extends ViewBinding> extends FragmentActivity {
-
-    protected T binding;
-
+public abstract class BaseActivity extends FragmentActivity {
+    private TextView tvTitle;
     private boolean toastAutoCancel = true;
+    private static final String TAG = "uploadImage";
     public static final Map<String, String> param = new HashMap<>();
-    //是否允许旋转屏幕
-    private boolean isAllowScreenRoate = true;
+
     private LoadingDialog loadingDialog;
     /**
      * activity跳转tag
@@ -69,35 +64,35 @@ public abstract class BaseBindingActivity<T extends ViewBinding> extends Fragmen
         this.toastAutoCancel = toastAutoCancel;
     }
 
+    /**
+     * 在oncreate后调用 修改标题
+     *
+     * @param title
+     */
+    public void setTitle(String title) {
+        tvTitle.setText(title);
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Type superClass = getClass().getGenericSuperclass();
-        Class<?> aClass = (Class<?>) ((ParameterizedType) superClass).getActualTypeArguments()[0];
-        try {
-            Method method = aClass.getDeclaredMethod("inflate", LayoutInflater.class);
-            binding = (T) method.invoke(null, getLayoutInflater());
-            setContentView(binding.getRoot());
-        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-            e.printStackTrace();
-        }
+        setContentView(returnLayoutResID());
         /*这行防止软键盘弹出时上面的空间错乱套*/
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
-//        CommonUtils.initState(this, R.color.contract_bar_col);
-        AppManager.getInstance().addActivity(this);
+        CommonUtils.initState(this, R.color.contract_bar_col);
         loadingDialog = new LoadingDialog(this);
-        initPhotoError();//解决7.0上相机问题
-        //设置屏幕是否可旋转
-        if (!isAllowScreenRoate) {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+
+        AppManager.getInstance().addActivity(this);
+
+        tvTitle = (TextView) findViewById(R.id.head_title);
+        if (tvTitle != null) {
+            setTitle(setTitleInitLayout());
         } else {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+            setTitleInitLayout();
         }
         initView();
         initData();
-
-
     }
 
     /**
@@ -114,6 +109,7 @@ public abstract class BaseBindingActivity<T extends ViewBinding> extends Fragmen
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         PermissionGen.onRequestPermissionsResult(this, requestCode, permissions, grantResults);
     }
 
@@ -126,15 +122,6 @@ public abstract class BaseBindingActivity<T extends ViewBinding> extends Fragmen
         if (checkDoubleClick(intent)) {
             super.startActivityForResult(intent, requestCode, options);
         }
-    }
-
-    /**
-     * 是否允许屏幕旋转
-     *
-     * @param allowScreenRoate true or false
-     */
-    public void setAllowScreenRoate(boolean allowScreenRoate) {
-        isAllowScreenRoate = allowScreenRoate;
     }
 
     /**
@@ -176,32 +163,70 @@ public abstract class BaseBindingActivity<T extends ViewBinding> extends Fragmen
     }
 
     /**
-     * android 7.0系统解决拍照的问题
+     * return一个布局文件 用来设置当前的activity
+     *
+     * @return
      */
-    private void initPhotoError() {
-        StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
-        StrictMode.setVmPolicy(builder.build());
-        builder.detectFileUriExposure();
+    public abstract int returnLayoutResID();
+
+    /**
+     * 设置一个标题
+     *
+     * @return
+     */
+    public abstract String setTitleInitLayout();
+
+    /**
+     * 获取标题String
+     */
+    public String getTitleString() {
+        return tvTitle.getText().toString();
     }
 
     /**
-     * 保证同一按钮在1秒内只会响应一次点击事件
+     * activity销毁方法
+     *
+     * @param view
      */
-    public abstract class OnSingleClickListener implements View.OnClickListener {
-        //两次点击按钮之间的间隔，目前为1000ms
-        private static final int MIN_CLICK_DELAY_TIME = 1000;
-        private long lastClickTime;
+    public void back(View view) {
+        finish();
+    }
 
-        public abstract void onSingleClick(View view);
 
-        @Override
-        public void onClick(View view) {
-            long curClickTime = System.currentTimeMillis();
-            if ((curClickTime - lastClickTime) >= MIN_CLICK_DELAY_TIME) {
-                lastClickTime = curClickTime;
-                onSingleClick(view);
-            }
-        }
+    public void setRightButton(int Resid) {
+        ImageView rightButton = (ImageView) findViewById(R.id.head_right_button);
+        rightButton.setImageResource(Resid);
+        rightButton.setVisibility(View.VISIBLE);
+    }
+
+    public void setRightButtonText(String s) {
+        TextView rightButton = (TextView) findViewById(R.id.head_right_text_button);
+        rightButton.setText(s);
+        rightButton.setVisibility(View.VISIBLE);
+    }
+
+    public void setRightButtonTextColor(int color) {
+        TextView rightButton = (TextView) findViewById(R.id.head_right_text_button);
+        rightButton.setTextColor(color);
+        rightButton.setVisibility(View.VISIBLE);
+    }
+
+/*
+    public void setTitleLineColor(int color) {
+        View view = findViewById(R.id.view_title_line);
+        view.setBackgroundColor(color);
+    }*/
+
+    public void rightClick(View v) {
+
+    }
+
+    public void rightIVClick(View v) {
+
+    }
+
+    public void rightTVClick(View v) {
+
     }
 
     /**
@@ -249,6 +274,31 @@ public abstract class BaseBindingActivity<T extends ViewBinding> extends Fragmen
         config.setToDefaults();
         res.updateConfiguration(config, res.getDisplayMetrics());
         return res;
+    }
+
+    /*设置文字左面的图片*/
+    public void setLeftDrawable(int resid) {
+        TextView leftButton = (TextView) findViewById(R.id.head_left_text_button);
+        Drawable leftDrawable = ContextCompat.getDrawable(this, resid);
+        leftDrawable.setBounds(0, 0, leftDrawable.getMinimumWidth(), leftDrawable.getMinimumHeight());
+        leftButton.setCompoundDrawables(leftDrawable, null, null, null);
+    }
+
+    /*设置文字上面的图片*/
+    public void setTopDrawable(int resid) {
+        TextView leftButton = (TextView) findViewById(R.id.head_left_text_button);
+        Drawable leftDrawable = ContextCompat.getDrawable(this, resid);
+        leftDrawable.setBounds(0, leftDrawable.getMinimumWidth(), 0, leftDrawable.getMinimumHeight());
+        leftButton.setCompoundDrawables(leftDrawable, null, null, null);
+    }
+
+    public void setLeftDrawableAndTextColor(int resid, int color) {
+        TextView leftButton = (TextView) findViewById(R.id.head_left_text_button);
+        leftButton.setTextColor(color);
+        leftButton.setTextColor(color);
+        Drawable leftDrawable = ContextCompat.getDrawable(this, resid);
+        leftDrawable.setBounds(0, 0, leftDrawable.getMinimumWidth(), leftDrawable.getMinimumHeight());
+        leftButton.setCompoundDrawables(leftDrawable, null, null, null);
     }
 
     public String getIntentStringExtra(String key) {
@@ -325,7 +375,7 @@ public abstract class BaseBindingActivity<T extends ViewBinding> extends Fragmen
         if (loadingDialog != null && loadingDialog.isShowing()) {
             loadingDialog.dismiss();
             //            OkGo.getInstance().cancelTag(this);
-            Logger.i("取消请求");
+            LogUtils.i("取消请求");
         }
     }
 
@@ -337,7 +387,7 @@ public abstract class BaseBindingActivity<T extends ViewBinding> extends Fragmen
         }
         super.onDestroy();
         EventBus.getDefault().unregister(this);
-        AppManager.getInstance().finishActivity(this);
+        AppManager.getInstance().removeActivity(this);
     }
 
 

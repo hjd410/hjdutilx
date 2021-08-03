@@ -1,6 +1,6 @@
 [![](https://www.jitpack.io/v/PromiseMiss/myUtilsLib.svg)](https://www.jitpack.io/#PromiseMiss/myUtilsLib)
 
-## 此分支版本为AndroidX
+## 此版本为AndroidX
 
 
 #**使用**

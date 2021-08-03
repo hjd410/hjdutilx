@@ -1,4 +1,4 @@
-package com.hjd.m_utilslib;
+package com.hjd.utilsX;
 
 import android.app.Application;
 
