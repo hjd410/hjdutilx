@@ -1,4 +1,4 @@
-package com.hjd.utilsX;
+package com.hjd.test;
 
 
 import android.Manifest;
@@ -15,14 +15,12 @@ import com.bumptech.glide.Glide;
 import com.hjd.apputils.base.BaseBindingActivity;
 import com.hjd.apputils.utils.StatusBarUtil;
 import com.hjd.apputils.utils.ToastUtils;
-import com.hjd.utilsX.databinding.ActivityMainBinding;
+import com.hjd.test.databinding.ActivityMainBinding;
 
 import java.io.File;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import static java.lang.annotation.ElementType.*;
 

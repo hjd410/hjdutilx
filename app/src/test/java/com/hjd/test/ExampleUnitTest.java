@@ -1,4 +1,4 @@
-package com.hjd.utilsX;
+package com.hjd.test;
 
 import org.junit.Test;
 

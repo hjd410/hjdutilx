@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.hjd.utilsX">
+    package="com.hjd.test">
 
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -11,7 +11,7 @@
         tools:ignore="ProtectedPermissions" />
 
     <application
-        android:name="com.hjd.utilsX.APP"
+        android:name="com.hjd.test.APP"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -20,7 +20,7 @@
         android:usesCleartextTraffic="true"
         android:requestLegacyExternalStorage="true"
         android:theme="@style/AppTheme">
-        <activity android:name="com.hjd.utilsX.MainActivity">
+        <activity android:name="com.hjd.test.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -28,7 +28,7 @@
             </intent-filter>
         </activity>
 
-        <service android:name="com.hjd.utilsX.MusicService" />
+        <service android:name="com.hjd.test.MusicService" />
     </application>
 
 </manifest>
