@@ -1,4 +1,4 @@
-[![](https://www.jitpack.io/v/PromiseMiss/myUtilsLib.svg)](https://www.jitpack.io/#PromiseMiss/myUtilsLib)
+[![](https://jitpack.io/v/hjd410/hjdutilx.svg)](https://jitpack.io/#hjd410/hjdutilx)
 
 ## 此版本为AndroidX
 
