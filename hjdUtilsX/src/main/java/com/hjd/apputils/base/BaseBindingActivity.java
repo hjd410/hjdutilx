@@ -89,7 +89,8 @@ public abstract class BaseBindingActivity<T extends ViewBinding> extends Fragmen
         /*这行防止软键盘弹出时上面的空间错乱套*/
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
         AppManager.getInstance().addActivity(this);
-        loadingDialog = new LoadingDialog(MyLib.getInstance().getContext());
+        //这里的context只能是当前的Activity
+        loadingDialog = new LoadingDialog(this);
         initView();
         initData();
         initPhotoError();//解决7.0上相机问题

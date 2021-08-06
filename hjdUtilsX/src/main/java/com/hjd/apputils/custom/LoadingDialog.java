@@ -1,5 +1,6 @@
 package com.hjd.apputils.custom;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -38,11 +39,12 @@ public class LoadingDialog extends AlertDialog {
         return loadingDialog;
     }
 
-    public LoadingDialog(@NonNull Context context) {
-        super(context, R.style.TransparentDialog);
-        this.context = context;
-        loadingDialog = new LoadingDialog(context, R.style.TransparentDialog); //设置AlertDialog背景透明
-        int divierId = context.getResources().getIdentifier("android:id/titleDivider", null, null);
+    public LoadingDialog(@NonNull Activity activity) {
+        super(activity, R.style.TransparentDialog);
+        this.context = activity;
+        //设置AlertDialog背景透明
+        loadingDialog = new LoadingDialog(activity, R.style.TransparentDialog);
+        int divierId = activity.getResources().getIdentifier("android:id/titleDivider", null, null);
         View divider = loadingDialog.findViewById(divierId);
         if (divider != null) {
             divider.setBackgroundColor(Color.TRANSPARENT);

@@ -113,7 +113,6 @@ public class MainActivity extends BaseBindingActivity<ActivityMainBinding> {
     }
 
 
-
     @Override
     public int checkPermission(String permission, int pid, int uid) {
         return super.checkPermission(permission, pid, uid);
