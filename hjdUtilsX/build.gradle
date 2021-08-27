@@ -13,15 +13,7 @@ android {
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
-        javaCompileOptions {
-            annotationProcessorOptions {
-                arguments = [
-                        //Pass in RxJava version, can pass in RxJava2, RxJava3
-                        rxhttp_rxjava : 'rxjava3',
-                        rxhttp_package: 'rxhttp'   //Specifies the RxHttp class package
-                ]
-            }
-        }
+
     }
 
     buildTypes {
@@ -62,14 +54,8 @@ dependencies {
     //OKGO网络请求
     api 'com.lzy.net:okgo:3.0.4'
     api 'com.lzy.net:okserver:2.0.5'
-    //RxHttp
-    api 'com.github.liujingxing.rxhttp:rxhttp:2.6.4'
     api 'com.squareup.okhttp3:okhttp:4.9.1' //rxhttp v2.2.2版本起，需要手动依赖okhttp
-    annotationProcessor 'com.github.liujingxing.rxhttp:rxhttp-compiler:2.6.4'
-    //rxjava3
-    api 'io.reactivex.rxjava3:rxjava:3.0.6'
-    api 'io.reactivex.rxjava3:rxandroid:3.0.0'
-    api 'com.github.liujingxing.rxlife:rxlife-rxjava3:2.1.0'
+
     //超多工具类
     api 'com.blankj:utilcodex:1.30.6'
     //腾讯的本地存储库,
