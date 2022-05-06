@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="@dimen/dp100"
+    android:layout_height="@dimen/dp100"
+    android:layout_gravity="center"
+    android:background="@drawable/shap_loading_dialog">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp">
+
+
+        <com.wang.avi.AVLoadingIndicatorView
+            android:id="@+id/loading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:visibility="visible"
+            app:indicatorColor="#FFffff"
+            app:indicatorName="LineSpinFadeLoaderIndicator" />
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/tv_load_dialog"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="@dimen/dp15"
+        android:text="加载中..."
+        android:textColor="#ffffff"
+        android:textSize="@dimen/sp12" />
+</RelativeLayout>
