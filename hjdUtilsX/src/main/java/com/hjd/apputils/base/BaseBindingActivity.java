@@ -28,10 +28,7 @@ import com.blankj.utilcode.util.LogUtils;
 import com.hjd.apputils.app.MyLib;
 import com.hjd.apputils.custom.LoadingDialog;
 import com.hjd.apputils.utils.AppManager;
-
-
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
+ 
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -40,7 +37,6 @@ import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-
 
 
 public abstract class BaseBindingActivity<T extends ViewBinding> extends FragmentActivity {
@@ -90,7 +86,7 @@ public abstract class BaseBindingActivity<T extends ViewBinding> extends Fragmen
         AppManager.getInstance().addActivity(this);
         //这里的context只能是当前的Activity
         loadingDialog = new LoadingDialog(this);
-        initView();
+        initView(savedInstanceState);
         initData();
         initPhotoError();//解决7.0上相机问题
         //设置屏幕是否可旋转
@@ -104,22 +100,12 @@ public abstract class BaseBindingActivity<T extends ViewBinding> extends Fragmen
     /**
      * 初始化控件
      */
-    protected abstract void initView();
+    protected abstract void initView(Bundle bundle);
 
     /**
      * 设置数据
      */
     protected abstract void initData();
-
-    /**
-     * 手动添加需要的权限
-     */
-    public void setPermissions(String... permissions) {
-        /*读取存取权限， 位置信息， 手机状态，录音权限(录小视频用的)，
-         * */
-
-    }
-
 
     @Override
     public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
@@ -324,14 +310,12 @@ public abstract class BaseBindingActivity<T extends ViewBinding> extends Fragmen
         }
     }
 
-    @Subscribe
     @Override
     protected void onDestroy() {
         if (loadingDialog != null && loadingDialog.isShowing()) {
             loadingDialog.dismiss();
         }
         super.onDestroy();
-        EventBus.getDefault().unregister(this);
         AppManager.getInstance().finishActivity(this);
     }
 }

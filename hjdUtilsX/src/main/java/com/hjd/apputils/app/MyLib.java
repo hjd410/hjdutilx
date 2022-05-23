@@ -5,7 +5,9 @@ import android.content.Context;
 
 
 /**
- * Created by HJD on 2021/1/4 0004 and 9:57.
+ *
+ * @author HJD
+ * @date 2021/1/4 0004 and 9:57
  */
 public class MyLib {
 

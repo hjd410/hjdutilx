@@ -10,11 +10,25 @@
         android:id="@+id/tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!这是绑定视图"
+        android:ellipsize="marquee"
+        android:marqueeRepeatLimit="marquee_forever"
+        android:shadowColor="@color/gray_text"
+        android:shadowDx="10"
+        android:shadowDy="5"
+        android:shadowRadius="5"
+        android:focusableInTouchMode="true"
+        android:focusable="true"
+        android:singleLine="true"
+        android:text="Hello World!这是绑定视图这是绑定视图这是绑定视图这是绑定视图这是绑定视图这是绑定视图这是绑定视图这是绑定视图这是绑定视图"
+        android:textSize="23sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent">
+
+        <requestFocus />
+    </TextView>
+
 
     <TextView
         android:id="@+id/tv1"

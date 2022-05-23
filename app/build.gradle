@@ -17,6 +17,7 @@ android {
                         rxhttp_rxjava : 'rxjava3',
                         rxhttp_package: 'rxhttp'   //Specifies the RxHttp class package
                 ]
+                arguments = [AROUTER_MODULE_NAME: project.getName()]
             }
         }
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -37,11 +38,17 @@ android {
         viewBinding = true
     }
 }
+configurations.all {
+    resolutionStrategy {
+        force 'androidx.core:core-ktx:1.6.0'
+    }
+}
+
 
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation 'androidx.appcompat:appcompat:1.3.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.3'
     implementation project(path: ':hjdUtilsX')
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
@@ -58,6 +65,32 @@ dependencies {
     implementation 'io.reactivex.rxjava3:rxandroid:3.0.0'
     implementation 'com.github.liujingxing.rxlife:rxlife-rxjava3:2.1.0'
 
+    implementation 'com.alibaba:arouter-api:1.5.2'
+    annotationProcessor 'com.alibaba:arouter-compiler:1.5.2'
+
+
+
+    //Gson==解析Json
+    api 'com.google.code.gson:gson:2.8.9'
+    api 'org.greenrobot:eventbus:3.1.1'
+    //图片库
+    api 'com.github.bumptech.glide:glide:4.9.0'
+    //Web
+    api 'com.just.agentweb:agentweb:4.1.4'
+    //标题栏框架
+    api 'com.github.getActivity:TitleBar:9.2'
+    //okhttp
+    api 'com.squareup.okhttp3:okhttp:4.9.1'
+    /*压缩*/
+    api 'com.zxy.android:tiny:0.0.6'
+    //超多工具类
+    api 'com.blankj:utilcodex:1.30.6'
+    //腾讯的本地存储库,
+    api 'com.tencent:mmkv:1.0.22'
+    //状态栏颜色
+    api 'com.jaeger.statusbarutil:library:1.5.1'
+    //图片选择
+    implementation 'com.github.HuanTanSheng:EasyPhotos:3.1.5'
 }
 repositories {
     maven { url 'https://dl.bintray.com/kotlin/kotlin-eap' }

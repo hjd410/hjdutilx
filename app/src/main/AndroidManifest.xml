@@ -29,6 +29,7 @@
         </activity>
 
         <service android:name="com.hjd.test.MusicService" />
+
     </application>
 
 </manifest>

@@ -19,13 +19,6 @@ import androidx.fragment.app.FragmentActivity;
 import com.google.gson.Gson;
 import com.hjd.apputils.R;
 import com.hjd.apputils.custom.LoadingDialog;
-import com.hjd.apputils.utils.Event;
-import com.hjd.apputils.utils.EventUtil;
-
-
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -42,8 +35,8 @@ public abstract class BaseFragment extends Fragment {
      * 贴附的activity
      */
     protected FragmentActivity mActivity;
-    public static final Map< String, String > map = new HashMap<>( );
-    public static final String json = new Gson( ).toJson( map );
+    public static final Map<String, String> map = new HashMap<>();
+    public static final String json = new Gson().toJson(map);
 
     /**
      * 根view
@@ -66,101 +59,55 @@ public abstract class BaseFragment extends Fragment {
     private LoadingDialog loadingDialog;
 
     @Override
-    public void onAttach (Context context) {
-        super.onAttach( context );
+    public void onAttach(Context context) {
+        super.onAttach(context);
 
-        mActivity = getActivity( );
+        mActivity = getActivity();
     }
 
     @Override
     @Nullable
-    public View onCreateView (LayoutInflater inflater, @Nullable ViewGroup container,
-                              @Nullable Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
         if (mRootView == null) {
-            mRootView = inflater.inflate( setLayoutResourceId( ), container, false );
+            mRootView = inflater.inflate(setLayoutResourceId(), container, false);
         }
-        if (isRegisterEventBus( )) {
-            EventUtil.register( this );
-        }
-        initPhotoError( );
-        loadingDialog = new LoadingDialog( mActivity );
+        initPhotoError();
+        loadingDialog = new LoadingDialog(mActivity);
         //        dialog = new FakeCustomDialog(mActivity);
 
-        initData( getArguments( ) );
+        initData(getArguments());
 
-        initView( );
+        initView();
 
         mIsPrepare = true;
 
-        onLazyLoad( );
+        onLazyLoad();
 
-        setListener( );
+        setListener();
 
         return mRootView;
     }
 
-    public FragmentActivity getmActivity ( ) {
+    public FragmentActivity getmActivity() {
         return mActivity;
     }
 
-    private void initPhotoError ( ) {
+    private void initPhotoError() {
         // android 7.0系统解决拍照的问题
-        StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder( );
-        StrictMode.setVmPolicy( builder.build( ) );
-        builder.detectFileUriExposure( );
+        StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
+        StrictMode.setVmPolicy(builder.build());
+        builder.detectFileUriExposure();
     }
 
     @Override
-    public void onSaveInstanceState (@NonNull Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
     }
 
-    /**
-     * 是否注册事件分发
-     *
-     * @return true绑定EventBus事件分发，默认不绑定，子类需要绑定的话复写此方法返回true.
-     */
-    protected boolean isRegisterEventBus ( ) {
-        return EventBus.getDefault( ).isRegistered( this );
-    }
-
-    /**
-     * 接收到分发到事件
-     *
-     * @param event 事件
-     */
-    protected void receiveEvent (Event event) {
-
-    }
-
-    /**
-     * 接受到分发的粘性事件
-     *
-     * @param event 粘性事件
-     */
-    protected void receiveStickyEvent (Event event) {
-
-    }
-
-    @Subscribe( threadMode = ThreadMode.MAIN )
-    public void onEventBusCome (Event event) {
-        if (event != null) {
-            receiveEvent( event );
-        }
-    }
-
-    @Subscribe ( threadMode = ThreadMode.MAIN, sticky = true )
-    public void onStickyEventBusCome (Event event) {
-        if (event != null) {
-            receiveStickyEvent( event );
-        }
-    }
 
     @Override
-    public void onDestroy ( ) {
-        super.onDestroy( );
-        if (isRegisterEventBus( )) {
-            EventUtil.unregister( this );
-        }
+    public void onDestroy() {
+        super.onDestroy();
     }
 
     /**
@@ -168,14 +115,14 @@ public abstract class BaseFragment extends Fragment {
      *
      * @param arguments 接收到的从其他地方传递过来的参数
      */
-    protected void initData (Bundle arguments) {
+    protected void initData(Bundle arguments) {
 
     }
 
     /**
      * 初始化View
      */
-    protected void initView ( ) {
+    protected void initView() {
 
     }
 /*
@@ -188,43 +135,43 @@ public abstract class BaseFragment extends Fragment {
     /**
      * 设置监听事件
      */
-    protected void setListener ( ) {
+    protected void setListener() {
 
     }
 
     @Override
-    public void setUserVisibleHint (boolean isVisibleToUser) {
-        super.setUserVisibleHint( isVisibleToUser );
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
 
         this.mIsVisible = isVisibleToUser;
 
         if (isVisibleToUser) {
-            onVisibleToUser( );
+            onVisibleToUser();
         }
     }
 
     /**
      * 用户可见时执行的操作
      */
-    protected void onVisibleToUser ( ) {
+    protected void onVisibleToUser() {
         if (mIsPrepare && mIsVisible) {
-            onLazyLoad( );
+            onLazyLoad();
         }
     }
 
     /**
      * 懒加载，仅当用户可见切view初始化结束后才会执行
      */
-    protected void onLazyLoad ( ) {
+    protected void onLazyLoad() {
     }
 
-    @SuppressWarnings ( "unchecked" )
-    protected < T extends View > T findViewById (int id) {
+    @SuppressWarnings("unchecked")
+    protected <T extends View> T findViewById(int id) {
         if (mRootView == null) {
             return null;
         }
 
-        return (T) mRootView.findViewById( id );
+        return (T) mRootView.findViewById(id);
     }
 
     /**
@@ -232,7 +179,7 @@ public abstract class BaseFragment extends Fragment {
      *
      * @return
      */
-    protected abstract int setLayoutResourceId ( );
+    protected abstract int setLayoutResourceId();
 
     /**
      * 无参数打开一个activi
@@ -240,13 +187,13 @@ public abstract class BaseFragment extends Fragment {
      * @author guoyi
      * @title 修改跳转页的标题
      */
-    public static < T > void gotoActivity (Context context, Class< T > clazz, String... title) {
-        Intent intent = new Intent( context, clazz );
-        intent.setFlags( Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS );
+    public static <T> void gotoActivity(Context context, Class<T> clazz, String... title) {
+        Intent intent = new Intent(context, clazz);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
         if (title != null) {
-            intent.putExtra( "titleString", title );
+            intent.putExtra("titleString", title);
         }
-        context.startActivity( intent );
+        context.startActivity(intent);
         intent = null;
     }
 
@@ -257,84 +204,80 @@ public abstract class BaseFragment extends Fragment {
      * @author guoyi
      * @params 参数
      */
-    public static < T > void gotoActivity (Context context, Class< T > clazz, HashMap< String, Object > params) {
-        Intent intent = new Intent( context, clazz );
-        intent.addFlags( Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS );
-        Iterator iterator = params.entrySet( ).iterator( );
-        while ( iterator.hasNext( ) ) {
-            Map.Entry entry = (Map.Entry) iterator.next( );
-            intent.putExtra( (String) entry.getKey( ), String.valueOf( entry.getValue( ) ) );
+    public static <T> void gotoActivity(Context context, Class<T> clazz, HashMap<String, Object> params) {
+        Intent intent = new Intent(context, clazz);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+        Iterator iterator = params.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry entry = (Map.Entry) iterator.next();
+            intent.putExtra((String) entry.getKey(), String.valueOf(entry.getValue()));
         }
-        context.startActivity( intent );
+        context.startActivity(intent);
     }
 
 
     /*设置文字左面的图片*/
-    public void setLeftDrawable (int resid) {
-        TextView leftButton = (TextView) findViewById( R.id.head_left_text_button );
-        Drawable leftDrawable = ContextCompat.getDrawable( mActivity, resid );
-        leftDrawable.setBounds( 0, 0, leftDrawable.getMinimumWidth( ), leftDrawable.getMinimumHeight( ) );
-        leftButton.setCompoundDrawables( leftDrawable, null, null, null );
+    public void setLeftDrawable(int resid) {
+        TextView leftButton = (TextView) findViewById(R.id.head_left_text_button);
+        Drawable leftDrawable = ContextCompat.getDrawable(mActivity, resid);
+        leftDrawable.setBounds(0, 0, leftDrawable.getMinimumWidth(), leftDrawable.getMinimumHeight());
+        leftButton.setCompoundDrawables(leftDrawable, null, null, null);
     }
 
     /*设置文字上面的图片*/
-    public void setTopDrawable (int resid) {
-        TextView leftButton = (TextView) findViewById( R.id.head_left_text_button );
-        Drawable leftDrawable = ContextCompat.getDrawable( mActivity, resid );
-        leftDrawable.setBounds( 0, leftDrawable.getMinimumWidth( ), 0, leftDrawable.getMinimumHeight( ) );
-        leftButton.setCompoundDrawables( leftDrawable, null, null, null );
+    public void setTopDrawable(int resid) {
+        TextView leftButton = (TextView) findViewById(R.id.head_left_text_button);
+        Drawable leftDrawable = ContextCompat.getDrawable(mActivity, resid);
+        leftDrawable.setBounds(0, leftDrawable.getMinimumWidth(), 0, leftDrawable.getMinimumHeight());
+        leftButton.setCompoundDrawables(leftDrawable, null, null, null);
     }
 
 
-
-
-    public LoadingDialog showLoadingDialog ( ) {
+    public LoadingDialog showLoadingDialog() {
         if (loadingDialog == null) {
-            loadingDialog = new LoadingDialog( mActivity );
+            loadingDialog = new LoadingDialog(mActivity);
         }
-        if (! loadingDialog.isShowing( )) {
-            loadingDialog.setCancelable( false );
-            loadingDialog.setCanceledOnTouchOutside( false );
-            loadingDialog.show( );
+        if (!loadingDialog.isShowing()) {
+            loadingDialog.setCancelable(false);
+            loadingDialog.setCanceledOnTouchOutside(false);
+            loadingDialog.show();
         }
         return loadingDialog;
     }
 
-    public void dismissLoading ( ) {
-        if (loadingDialog != null && loadingDialog.isShowing( )) {
-            loadingDialog.dismiss( );
+    public void dismissLoading() {
+        if (loadingDialog != null && loadingDialog.isShowing()) {
+            loadingDialog.dismiss();
         }
     }
 
     @Override
-    public void onDestroyView ( ) {
-        if (loadingDialog != null && loadingDialog.isShowing( )) {
-            loadingDialog.dismiss( );
+    public void onDestroyView() {
+        if (loadingDialog != null && loadingDialog.isShowing()) {
+            loadingDialog.dismiss();
         }
-        //        OkGo.getInstance().cancelTag(this);
-        EventBus.getDefault( ).unregister( this );
-        super.onDestroyView( );
+        super.onDestroyView();
     }
 
     @Override
-    public void onResume ( ) {
-        super.onResume( );
+    public void onResume() {
+        super.onResume();
         clickable = true;
     }
 
-    protected boolean isClicked ( ) {
+    protected boolean isClicked() {
         return clickable;
     }
 
-    protected void lookClick ( ) {
+    protected void lookClick() {
         clickable = false;
     }
 
     @Override
-    public void startActivityForResult (Intent intent, int requestCode, @Nullable Bundle options) {
-        if (isClicked( )) {
-            lookClick( );
-            super.startActivityForResult( intent, requestCode, options );
+    public void startActivityForResult(Intent intent, int requestCode, @Nullable Bundle options) {
+        if (isClicked()) {
+            lookClick();
+            super.startActivityForResult(intent, requestCode, options);
         }
     }
 }

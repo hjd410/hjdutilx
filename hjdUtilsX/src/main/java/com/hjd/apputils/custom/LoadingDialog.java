@@ -27,6 +27,10 @@ public class LoadingDialog extends AlertDialog {
     private static LoadingDialog loadingDialog;
     private AVLoadingIndicatorView avi;
 
+    enum style {
+
+    }
+
     public static LoadingDialog getInstance(Context context) {
         loadingDialog = new LoadingDialog(context, R.style.TransparentDialog); //设置AlertDialog背景透明
         int divierId = context.getResources().getIdentifier("android:id/titleDivider", null, null);

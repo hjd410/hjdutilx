@@ -4,11 +4,13 @@ package com.hjd.test;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.view.View;
 
+import com.alibaba.android.arouter.launcher.ARouter;
 import com.blankj.utilcode.util.LogUtils;
 import com.bumptech.glide.Glide;
 import com.hjd.apputils.base.BaseBindingActivity;
@@ -22,8 +24,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import static java.lang.annotation.ElementType.*;
-
-import rxhttp.RxHttp;
 
 
 public class MainActivity extends BaseBindingActivity<ActivityMainBinding> {
@@ -47,8 +47,9 @@ public class MainActivity extends BaseBindingActivity<ActivityMainBinding> {
         }
     };
 
+
     @Override
-    protected void initView() {
+    protected void initView(Bundle bundle) {
 
     }
 
@@ -56,21 +57,21 @@ public class MainActivity extends BaseBindingActivity<ActivityMainBinding> {
     public void initData() {
 
         StatusBarUtil.setRootViewFitsSystemWindows(this, false);
-        showLoadingDialog();
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                dismissLoading();
-            }
-        }, 5000);
+        //showLoadingDialog();
+        //new Handler().postDelayed(new Runnable() {
+        //    @Override
+        //    public void run() {
+        //        dismissLoading();
+        //    }
+        //}, 5000);
 
         Glide.with(this).load("http://p1.pstatp.com/large/166200019850062839d3").into(binding.img);
 
-        RxHttp.get("")
-                .asString()
-                .subscribe(s -> {
-                }, throwable -> {
-                });
+        //RxHttp.get("")
+        //        .asString()
+        //        .subscribe(s -> {
+        //        }, throwable -> {
+        //        });
 
         binding.tv.setOnClickListener(new OnSingleClickListener() {
             @Override
@@ -107,13 +108,16 @@ public class MainActivity extends BaseBindingActivity<ActivityMainBinding> {
         binding.tv1.setOnClickListener(new OnSingleClickListener() {
             @Override
             public void onSingleClick(View view) {
-                if (isBind) {
-                    unbindService(serviceConnection);
-                    ToastUtils.showShort("解绑服务");
-                    isBind = false;
-                } else {
-                    ToastUtils.showShort("还没绑定服务");
-                }
+                //if (isBind) {
+                //    unbindService(serviceConnection);
+                //    ToastUtils.showShort("解绑服务");
+                //    isBind = false;
+                //} else {
+                //    ToastUtils.showShort("还没绑定服务");
+                //}
+
+                ARouter.getInstance().build("/one/AAA")
+                        .navigation();
 
             }
         });

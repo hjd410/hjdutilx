@@ -260,12 +260,14 @@ public class ImageCompressUtils {
      * @return the file path or null
      */
     public static String getUriToPath(final Uri uri) {
-        if (null == uri) return null;
+        if (null == uri) {
+            return null;
+        }
         final String scheme = uri.getScheme();
         String data = null;
-        if (scheme == null)
+        if (scheme == null) {
             data = uri.getPath();
-        else if (ContentResolver.SCHEME_FILE.equals(scheme)) {
+        } else if (ContentResolver.SCHEME_FILE.equals(scheme)) {
             data = uri.getPath();
         } else if (ContentResolver.SCHEME_CONTENT.equals(scheme)) {
             Cursor cursor = MyLib.getInstance().getContext().getContentResolver().query(uri, new String[]{Images.ImageColumns.DATA}, null, null, null);

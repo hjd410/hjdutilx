@@ -2,6 +2,7 @@ package com.hjd.test;
 
 import android.app.Application;
 
+import com.alibaba.android.arouter.launcher.ARouter;
 import com.hjd.apputils.app.MyLib;
 
 /**
@@ -14,6 +15,9 @@ public class APP extends Application {
     public void onCreate() {
         super.onCreate();
         MyLib.getInstance().init(this);
-    }
+        ARouter.openDebug();
+        ARouter.openLog();
+        ARouter.init(this);
 
+    }
 }

@@ -16,13 +16,8 @@ import androidx.viewbinding.ViewBinding;
 
 import com.google.gson.Gson;
 import com.hjd.apputils.custom.LoadingDialog;
-import com.hjd.apputils.utils.Event;
-import com.hjd.apputils.utils.EventUtil;
 
 
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -88,9 +83,6 @@ public abstract class BaseBindingFragment<T extends ViewBinding> extends Fragmen
         }
 
 
-        if (isRegisterEventBus()) {
-            EventUtil.register(this);
-        }
         initPhotoError();//解决7.0相机问题
         loadingDialog = new LoadingDialog(mActivity);
         initData(getArguments());
@@ -119,53 +111,14 @@ public abstract class BaseBindingFragment<T extends ViewBinding> extends Fragmen
     public void onSaveInstanceState(@NonNull Bundle outState) {
     }
 
-    /**
-     * 是否注册事件分发
-     *
-     * @return true绑定EventBus事件分发，默认不绑定，子类需要绑定的话复写此方法返回true.
-     */
-    protected boolean isRegisterEventBus() {
-        return EventBus.getDefault().isRegistered(this);
-    }
 
-    /**
-     * 接收到分发到事件
-     *
-     * @param event 事件
-     */
-    protected void receiveEvent(Event event) {
 
-    }
 
-    /**
-     * 接受到分发的粘性事件
-     *
-     * @param event 粘性事件
-     */
-    protected void receiveStickyEvent(Event event) {
-
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEventBusCome(Event event) {
-        if (event != null) {
-            receiveEvent(event);
-        }
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
-    public void onStickyEventBusCome(Event event) {
-        if (event != null) {
-            receiveStickyEvent(event);
-        }
-    }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (isRegisterEventBus()) {
-            EventUtil.unregister(this);
-        }
+
     }
 
     /**
@@ -270,7 +223,6 @@ public abstract class BaseBindingFragment<T extends ViewBinding> extends Fragmen
             loadingDialog.dismiss();
         }
         //        OkGo.getInstance().cancelTag(this);
-        EventBus.getDefault().unregister(this);
         super.onDestroyView();
     }
 

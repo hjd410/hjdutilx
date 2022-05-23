@@ -52,10 +52,12 @@ public class MD5Util {
             byte[] b = bmd5.digest();// 加密
             for (int offset = 0; offset < b.length; offset++) {
                 i = b[offset];
-                if (i < 0)
+                if (i < 0) {
                     i += 256;
-                if (i < 16)
+                }
+                if (i < 16) {
                     buf.append("0");
+                }
                 buf.append(Integer.toHexString(i));
             }
             return buf.toString();
@@ -86,10 +88,11 @@ public class MD5Util {
         byte[] byteArray = messageDigest.digest();
         StringBuffer md5StrBuff = new StringBuffer();
         for (int i = 0; i < byteArray.length; i++) {
-            if (Integer.toHexString(0xFF & byteArray[i]).length() == 1)
+            if (Integer.toHexString(0xFF & byteArray[i]).length() == 1) {
                 md5StrBuff.append("0").append(Integer.toHexString(0xFF & byteArray[i]));
-            else
+            } else {
                 md5StrBuff.append(Integer.toHexString(0xFF & byteArray[i]));
+            }
         }
         return md5StrBuff.toString();
     }

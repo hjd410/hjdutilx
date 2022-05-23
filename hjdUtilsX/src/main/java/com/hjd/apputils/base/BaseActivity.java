@@ -30,14 +30,10 @@ import com.hjd.apputils.utils.AppManager;
 import com.hjd.apputils.utils.CommonUtils;
 import com.hjq.permissions.XXPermissions;
 
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
 
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-
-
 
 
 public abstract class BaseActivity extends FragmentActivity {
@@ -92,25 +88,14 @@ public abstract class BaseActivity extends FragmentActivity {
         } else {
             setTitleInitLayout();
         }
-        initView();
+        initView(savedInstanceState);
         initData();
-    }
-
-    /**
-     * 手动添加需要的权限
-     */
-    public void setPermissions(String... permissions) {
-        /*读取存取权限， 位置信息， 手机状态，录音权限(录小视频用的)，
-         * */
-
-
     }
 
 
     @Override
     public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
     }
-
 
 
     /**
@@ -144,7 +129,7 @@ public abstract class BaseActivity extends FragmentActivity {
     /**
      * 为了兼容老框架的initVIew 方法
      */
-    public void initView() {
+    public void initView(Bundle savedInstanceState) {
     }
 
     public void initData() {
@@ -368,14 +353,12 @@ public abstract class BaseActivity extends FragmentActivity {
         }
     }
 
-    @Subscribe
     @Override
     protected void onDestroy() {
         if (loadingDialog != null && loadingDialog.isShowing()) {
             loadingDialog.dismiss();
         }
         super.onDestroy();
-        EventBus.getDefault().unregister(this);
         AppManager.getInstance().removeActivity(this);
     }
 
