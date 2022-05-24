@@ -19,13 +19,10 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewbinding.ViewBinding;
 
-import com.blankj.utilcode.util.LogUtils;
-import com.hjd.apputils.app.MyLib;
 import com.hjd.apputils.custom.LoadingDialog;
 import com.hjd.apputils.utils.AppManager;
  

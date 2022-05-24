@@ -14,7 +14,6 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewbinding.ViewBinding;
 
-import com.google.gson.Gson;
 import com.hjd.apputils.custom.LoadingDialog;
 
 
@@ -39,7 +38,6 @@ public abstract class BaseBindingFragment<T extends ViewBinding> extends Fragmen
      */
     protected FragmentActivity mActivity;
     public static final Map<String, String> map = new HashMap<>();
-    public static final String json = new Gson().toJson(map);
 
     /**
      * 根view

@@ -18,17 +18,13 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
-import com.blankj.utilcode.util.LogUtils;
 import com.hjd.apputils.R;
 import com.hjd.apputils.custom.LoadingDialog;
 import com.hjd.apputils.utils.AppManager;
 import com.hjd.apputils.utils.CommonUtils;
-import com.hjq.permissions.XXPermissions;
 
 
 import java.util.HashMap;
@@ -348,8 +344,6 @@ public abstract class BaseActivity extends FragmentActivity {
     public void dismissLoading() {
         if (loadingDialog != null && loadingDialog.isShowing()) {
             loadingDialog.dismiss();
-            //            OkGo.getInstance().cancelTag(this);
-            LogUtils.i("取消请求");
         }
     }
 

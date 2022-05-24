@@ -3,8 +3,6 @@ package com.hjd.apputils.utils;
 import android.util.Log;
 
 
-import com.blankj.utilcode.util.LogUtils;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -121,7 +119,7 @@ public class ZipUtils {
             //创建文件
             File file = new File(srcFileString);
             //压缩
-            LogUtils.d("---->" + file.getParent() + "===" + file.getAbsolutePath());
+            Log.d("---->" , file.getParent() + "===" + file.getAbsolutePath());
             ZipFiles(file.getParent() + File.separator, file.getName(), outZip);
             //完成和关闭
             outZip.finish();
@@ -140,8 +138,7 @@ public class ZipUtils {
      * @throws Exception
      */
     private static void ZipFiles(String folderString, String fileString, ZipOutputStream zipOutputSteam) throws Exception {
-        LogUtils.d("folderString:" + folderString + "\n" +
-                "fileString:" + fileString + "\n==========================");
+
         if (zipOutputSteam == null)
             return;
         File file = new File(folderString + fileString);

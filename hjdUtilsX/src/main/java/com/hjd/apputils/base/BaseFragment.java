@@ -16,7 +16,6 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
-import com.google.gson.Gson;
 import com.hjd.apputils.R;
 import com.hjd.apputils.custom.LoadingDialog;
 
@@ -36,7 +35,6 @@ public abstract class BaseFragment extends Fragment {
      */
     protected FragmentActivity mActivity;
     public static final Map<String, String> map = new HashMap<>();
-    public static final String json = new Gson().toJson(map);
 
     /**
      * 根view
